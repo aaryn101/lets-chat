@@ -6,9 +6,8 @@
 
 module.exports = function() {
 
-    var helpers = require('./../core/helpers');
-
     var app = this.app,
+        core = this.core,
         middlewares = this.middlewares,
         models = this.models,
         User = models.user;
@@ -34,24 +33,7 @@ module.exports = function() {
                     take: req.param('take')
                 };
 
-            options = helpers.sanitizeQuery(options, {
-                defaults: {
-                    take: 500
-                },
-                maxTake: 5000
-            });
-
-            var find = User.find();
-
-            if (options.skip) {
-                find.skip(options.skip);
-            }
-
-            if (options.take) {
-                find.limit(options.take);
-            }
-
-            find.exec(function(err, users) {
+            core.users.list(options, function(err, users) {
                 if (err) {
                     console.log(err);
                     return res.status(400).json(err);
